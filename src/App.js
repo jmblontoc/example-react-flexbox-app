@@ -1,25 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import useWindowWidth from "./hooks/useWindowWidth";
+import DesktopLayout from "./layouts/DesktopLayout";
+import MobileLayout from "./layouts/MobileLayout";
+import "./components/Widget/index.css";
+import { useSelector } from "react-redux";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const BREAKPOINT = 600;
+    const [currentLayout, setCurrentLayout] = useState();
+
+    const layoutState = useSelector((state) => state.layout);
+    const { widgetColors } = layoutState;
+
+    const renderLayout = () => {
+        switch (currentLayout) {
+            case "desktop":
+                return <DesktopLayout widgetColors={widgetColors} />;
+            case "mobile":
+                return <MobileLayout widgetColors={widgetColors} />;
+            default:
+                return <React.Fragment />;
+        }
+    };
+
+    const windowWidth = useWindowWidth();
+
+    useEffect(() => {
+        if (windowWidth > BREAKPOINT) {
+            setCurrentLayout("desktop");
+        } else {
+            setCurrentLayout("mobile");
+        }
+    }, [windowWidth]);
+
+    return renderLayout();
 }
 
 export default App;
